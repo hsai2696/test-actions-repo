@@ -1,38 +1,39 @@
 name: test-variable-passing-across-jobs
 on:
-    workflow_dispatch:
-      inputs:
-        re-run-status:
-          required: true
-          type: choice
-          options:
-          - sucess
+  workflow_dispatch:
+    inputs:
+      re-run-status:
+        required: true
+        type: choice
+        options:
+          - success
           - fail
 
 jobs:
   Django-test:
     name: Django-test
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        shell: bash
+
+    outputs:
+      test-outcome: ${{ steps.see-output-in-next-step.outputs.result }}
 
     steps:
-      
       - name: Rerun failed tests
         id: django-failed-tests-rerun
         continue-on-error: true
         run: |
-          
-          if [ "${{ inputs.re-run-status }}" = "fail" ]; then
+          if [ "${{ github.event.inputs.re-run-status }}" = "fail" ]; then
+            echo "test-result=fail" >> $GITHUB_ENV
             exit 1
+          else
+            echo "test-result=success" >> $GITHUB_ENV
           fi
-      - name: next-step
+
+      - name: Set step output
         id: see-output-in-next-step
         continue-on-error: true
         run: |
-          echo ${{steps.django-failed-tests-rerun.outcome}}
-      
+          echo "::set-output name=result::${{ env.test-result }}"
 
   PublishTestResults:
     name: Publish unit test results
@@ -41,10 +42,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
-      - name: Save the tests result 
-        if: always()
-        continue-on-error: true
+      - name: Display the test result
         run: |
-          echo ${{steps.django-failed-tests-rerun.outcome}}
-
+          echo "Outcome of Django-test: ${{ needs.Django-test.outputs.test-outcome }}"
