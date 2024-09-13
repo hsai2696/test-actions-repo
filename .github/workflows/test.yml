@@ -24,7 +24,7 @@ jobs:
         continue-on-error: true
         run: |
           
-          if ${{inputs.re-run-status}} == 'fail'
+          if [ "${{ inputs.re-run-status }}" = "fail" ]; then
             exit 1
           fi
       
@@ -33,7 +33,7 @@ jobs:
     name: Publish unit test results
     needs: Django-test
     if: always()
-    runs-on: node:16-bullseye-slim
+    runs-on: ubuntu-latest
 
     steps:
 
