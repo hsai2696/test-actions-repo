@@ -1,0 +1,45 @@
+name: test-variable-passing-acros-jobs
+on:
+    workflow_dispatch:
+      inputs:
+        re-run-status:
+          required: true
+          type: choice
+          options:
+          - sucess
+          - fail
+
+jobs:
+  Django-test:
+    name: Django-test
+    runs-on: node:16-bullseye-slim
+    defaults:
+      run:
+        shell: bash
+
+    steps:
+      
+      - name: Rerun failed tests
+        id: django-failed-tests-rerun
+        continue-on-error: true
+        run: |
+          
+          if ${{inputs.re-run-status}} == 'fail'
+            exit 1
+          fi
+      
+
+  PublishTestResults:
+    name: Publish unit test results
+    needs: Django-test
+    if: always()
+    runs-on: node:16-bullseye-slim
+
+    steps:
+
+      - name: Save the tests result 
+        if: always()
+        continue-on-error: true
+        run: |
+          cat ${{steps.django-failed-tests-rerun.outcome}}
+
