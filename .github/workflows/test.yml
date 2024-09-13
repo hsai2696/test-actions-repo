@@ -41,5 +41,5 @@ jobs:
         if: always()
         continue-on-error: true
         run: |
-          cat ${{steps.django-failed-tests-rerun.outcome}}
+          echo ${{steps.django-failed-tests-rerun.outcome}}
 
