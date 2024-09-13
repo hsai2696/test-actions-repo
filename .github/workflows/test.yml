@@ -27,6 +27,11 @@ jobs:
           if [ "${{ inputs.re-run-status }}" = "fail" ]; then
             exit 1
           fi
+      - name: next-step
+        id: see-output-in-next-step
+        continue-on-error: true
+        run: |
+          echo ${{steps.django-failed-tests-rerun.outcome}}
       
 
   PublishTestResults:
