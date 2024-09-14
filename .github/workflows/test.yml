@@ -54,10 +54,8 @@ jobs:
           echo "Total jobs: ${{ needs.Django-test.outputs.total-jobs}}"
       - name: create directories for a specified number
         run: |
-          #!/bin/bash
-          start = 0
-          end = ${{ needs.Django-test.outputs.total-jobs}}
-          for i in $(seq $start $end); do
+          set -x
+          for i in {0..${{ needs.Django-test.outputs.total-jobs}}}; do
               dir_name="test-$i"
               mkdir -p "$dir_name"
               echo "Created directory: $dir_name"
