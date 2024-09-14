@@ -72,8 +72,7 @@ jobs:
           # Output the count
           echo "Number of directories matching the pattern '$pattern': $count"
 
-          # Optionally, you can set this count as an output if needed
-          echo "::set-output name=directory_count::$count"
+          echo "directory_count=$count" >> $GITHUB_ENV
       - name: Print Directories count
         run: |
-          echo ${{steps.results-count.directory_count}}
+          echo "Number of directories matching the pattern: ${{ env.directory_count }}"
