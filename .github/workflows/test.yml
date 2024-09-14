@@ -61,6 +61,7 @@ jobs:
               echo "Created directory: $dir_name"
           done
       - name: Count directories
+        id: results-count
         run: |
           # Define the pattern to match directories
           pattern="test-[0-5]"
@@ -73,3 +74,6 @@ jobs:
 
           # Optionally, you can set this count as an output if needed
           echo "::set-output name=directory_count::$count"
+      - name: Print Directories count
+        run: |
+          echo ${{steps.results-count.directory_count}}
