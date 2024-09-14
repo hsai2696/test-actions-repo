@@ -20,7 +20,7 @@ jobs:
         job: [0, 1, 2, 3, 4, 5]  # Matrix size is 6
 
     outputs:
-      test-outcome: ${{ steps.see-output-in-next-step.outputs.result }}
+      total-jobs: ${{ steps.see-output-in-next-step.outputs.result }}
 
     steps:
       - name: Rerun failed tests
@@ -29,8 +29,6 @@ jobs:
           JOB: ${{ matrix.job }}
         continue-on-error: true
         run: |
-          echo ${{ strategy.job-total }}
-          echo ${{env.JOB}}
           if [ "${{ github.event.inputs.re-run-status }}" = "fail" ]; then
             echo "test-result=fail" >> $GITHUB_ENV
             exit 1
@@ -42,7 +40,7 @@ jobs:
         id: see-output-in-next-step
         continue-on-error: true
         run: |
-          echo "::set-output name=result::${{ env.test-result }}"
+          echo "::set-output name=result::${{ strategy.job-total }}"
 
   PublishTestResults:
     name: Publish unit test results
@@ -53,4 +51,4 @@ jobs:
     steps:
       - name: Display the test result
         run: |
-          echo "Outcome of Django-test: ${{ needs.Django-test.outputs.test-outcome }}"
+          echo "Total jobs: ${{ needs.Django-test.outputs.total-jobs}}"
