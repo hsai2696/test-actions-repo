@@ -13,6 +13,11 @@ jobs:
   Django-test:
     name: Django-test
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 6
+      matrix:
+        job: [0, 1, 2, 3, 4, 5]  # Matrix size is 6
 
     outputs:
       test-outcome: ${{ steps.see-output-in-next-step.outputs.result }}
@@ -20,8 +25,12 @@ jobs:
     steps:
       - name: Rerun failed tests
         id: django-failed-tests-rerun
+        env:
+          JOB: ${{ matrix.job }}
         continue-on-error: true
         run: |
+          echo ${{ strategy.job-total }}
+          echo ${{env.JOB}}
           if [ "${{ github.event.inputs.re-run-status }}" = "fail" ]; then
             echo "test-result=fail" >> $GITHUB_ENV
             exit 1
