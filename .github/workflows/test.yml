@@ -64,7 +64,7 @@ jobs:
         id: results-count
         run: |
           # Define the pattern to match directories
-          pattern="test-[0-5]"
+          pattern="test-*"
 
           # Count directories matching the pattern
           count=$(find . -maxdepth 1 -type d -name "$pattern" | wc -l)
